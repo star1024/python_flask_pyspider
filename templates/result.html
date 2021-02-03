@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+    <body>
+        <p>你的券商: {{broker}}</p>
+        <p>你的帳號: {{name}}</p>
+        <p>你的執行碼: {{ projectid }}</p>
+        <form action="/" method="get" >
+            <button type="submit">回上一頁</button>
+        </form>
+        <form action="/result" method="get" >
+            查詢執行碼(1分鐘後)：<input type="text" name="project_id">
+            <button type="submit">查詢：</button>
+        </form>
+        <p>你的執行結果: {{ result }}</p>
+    </body>
+</html>
+<!--元大 'R221754886'  pwd ='isam1689' -->
+<!--永豐 'H121666748'  pwd ='isam1689' -->
