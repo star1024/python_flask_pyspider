@@ -11,7 +11,7 @@ import requests
 import json
 import urllib.request 
 from PIL import Image,ImageDraw
-import model # model.py 自定義模組
+from spy.std import model # model.py 自定義模組
 from pyspider.libs.base_handler import *
 
 

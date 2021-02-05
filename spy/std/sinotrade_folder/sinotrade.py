@@ -7,8 +7,23 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import pymysql
 import json
-import model # model.py 自定義模組
+import sys
+from spy.std import model# model.py 自定義模組
+from pyspider.libs.base_handler import *
 
+
+class Handler(BaseHandler):
+    def on_start(self):
+        self.crawl('', callback=self.index_page)
+
+    def index_page(self, response):
+    
+        para = Parsing(str(response.url))
+
+        return {
+            'taskid':para[0],
+            'result':para[1],
+        }
 
 #存入資料庫1
 def insert_db(tmp,taskid):

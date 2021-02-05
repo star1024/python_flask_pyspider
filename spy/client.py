@@ -1,9 +1,6 @@
 from xmlrpc.client import ServerProxy
 import hashlib
-#from urllib import parse
-#import datetime
 import base64
-#import uuid
 
 def b64e(s):
     return base64.b64encode(s.encode()).decode()

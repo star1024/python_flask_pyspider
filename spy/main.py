@@ -1,24 +1,13 @@
 from flask import Flask, render_template, request
-from config import DevConfig
-import client # client.py
+# from config import DevConfig
+from spy import client # client.py
 import pymysql
 import base64
 import uuid
-from flask_httpauth import HTTPDigestAuth
 app = Flask(__name__)#定位目前載入資料夾的位置
-app.config.from_object(DevConfig)
-app.config['SECRET_KEY'] = 'secret key here'
-auth = HTTPDigestAuth()
+app.config["DEBUG"] = True
 
-users = {
-    "john": "hello",
-}
 
-@auth.get_password
-def get_pw(username):
-    if username in users:
-        return users.get(username)
-    return None
 def broker_val(data):
     return {
     '元大': 'yuanta',
@@ -39,7 +28,6 @@ def msyql(data):
     return "查無資料"
 
 @app.route('/')
-@auth.login_required
 def main():
     return render_template('login.html')
 
@@ -63,4 +51,4 @@ def result():
     elif request.method == 'GET':
         return render_template('login.html')
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=2222)
+    app.run(host='0.0.0.0', port=2233)
