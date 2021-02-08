@@ -33,8 +33,8 @@ client.py :為取得main.py參數->餵給pysipder服務器
 
 2.modules的引用
 -------------
-*使用 absolute imports 引用其他 modules, spy.std.model
-*.pth添加專案路徑讓pyspider框架可import使用專案腳本
+* 使用 absolute imports 引用其他 modules, spy.std.model
+* .pth添加專案路徑讓pyspider框架可import使用專案腳本
 ```
 from spy.std.yuanta_folder import yuanta
 
