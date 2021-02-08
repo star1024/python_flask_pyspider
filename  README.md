@@ -8,8 +8,8 @@
 -------------
 >Flask框架 
 ```
-main.py :為啟動服務器,static & templates資料夾存放HTML檔
-client.py :為取得main.py參數->餵給pysipder服務器
+* main.py 為啟動服務器,static & templates資料夾存放HTML檔
+* client.py 為取得main.py參數->餵給pysipder服務器
 ```
 
 >std folder
@@ -47,7 +47,9 @@ class Handler(yuanta.Handler):
 ```
 
 3.其他維護內容
+-------------
 >chromedriver需不定期因應瀏覽器版本更新.exe檔[chromedriver downloads](https://chromedriver.chromium.org/downloads)
+
 >pyspider常見錯誤因素
-* 1.TimeoutError(pyspider.resultdb):沒抓到資料/帳號密碼錯誤
-* 2.NameError(pyspider.taskdb):程式碼出現錯誤
+* TimeoutError(pyspider.resultdb):沒抓到資料/帳號密碼錯誤
+* NameError(pyspider.taskdb):程式碼出現錯誤
