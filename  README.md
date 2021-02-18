@@ -19,9 +19,6 @@
 
 * 以券商分類
 | Ａ證券   | Ｂ證券  |
-| --------|:------:|
-| 網頁表格1| 網頁表格1|
-| 網頁表格2| 網頁表格2|
 
 * model.py模組化腳本內容
 ```
@@ -36,7 +33,7 @@
 * 使用 absolute imports 引用其他 modules, spy.std.model
 * .pth添加專案路徑讓pyspider框架可import使用專案腳本
 ```
-from spy.std.yuanta_folder import yuanta
+from spy.std import yuanta
 
 from importlib import reload
 reload(yuanta)

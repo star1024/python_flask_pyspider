@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request,redirect,url_for
 # from config import DevConfig
 from spy import client # client.py
 import pymysql
@@ -7,7 +7,7 @@ import uuid
 app = Flask(__name__)#定位目前載入資料夾的位置
 app.config["DEBUG"] = True
 
-
+#選擇券商
 def broker_val(data):
     return {
     '元大': 'yuanta',
@@ -27,28 +27,27 @@ def msyql(data):
         return data_provider
     return "查無資料"
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def main():
+    if request.method == 'POST':
+        user = request.form.get('user')
+        password = request.form.get('password')
+        broker = broker_val(request.form.get('broker'))
+        user_id = str(uuid.uuid4())
+
+        client.main(user,password,user_id,broker)#送參數給py檔啟動pyspider
+        return redirect(url_for('result', name=user, projectid = user_id,broker=request.values['broker']))
+
     return render_template('login.html')
 
-@app.route('/result', methods=['GET', 'POST'])
+@app.route('/result',methods=['GET'])
 def result():
-    if request.method == 'POST':
-        user = request.values['user']
-        password = request.values['password']
-        broker = broker_val(request.values['broker'])
-        
-        #exec(open('client.py').read())
-        #user = 'H121666748'  pwd ='isam1689'
-        user_id = str(uuid.uuid4())
-        client.main(user,password,user_id,broker)#送參數給py檔啟動pyspider
-        return render_template('result.html', name=user, projectid = user_id,broker=request.values['broker'])
 
-    if request.method == 'GET' and len(request.args.get('project_id'))>0:
+    if 'project_id' in request.args:#查詢DB執行結果
         search_id = request.args.get('project_id')
         result_id = msyql(search_id)
         return render_template('result.html', result=result_id)
-    elif request.method == 'GET':
-        return render_template('login.html')
+    
+    return render_template('result.html',broker=request.args['broker'], name = request.args['name'], projectid = request.args['projectid'])
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=2233)
