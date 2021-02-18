@@ -1,12 +1,7 @@
 from xmlrpc.client import ServerProxy
 import hashlib
 import base64
-
-def b64e(s):
-    return base64.b64encode(s.encode()).decode()
-
-def b64d(s):
-    return base64.b64decode(s).decode()
+from spy.std import model# model.py 自定義模組
 
 def main(user,pwd,user_id,broker):
     server = ServerProxy("http://127.0.0.1:23333") # 初始化服務器
@@ -16,7 +11,7 @@ def main(user,pwd,user_id,broker):
         'password':pwd,
         'taskid':user_id# 產生第四版 UUID（隨機）
     }
-    b64 = b64e(str(params))
+    b64 = model.b64e(str(params))
     url = 'https://www.careone.com.tw/?params='+b64
 
     h1=hashlib.md5()
