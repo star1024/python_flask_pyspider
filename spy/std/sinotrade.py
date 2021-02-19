@@ -108,7 +108,7 @@ def selenium(username,userpassword,taskid):
         error_string = repr(e)
         browser.quit()
         return error_string
-selenium("H121666748","isam1689","test")
+#selenium("H121666748","isam1689","test")
 
 #解析pyspider取得遠端api的參數
 def Parsing(url):

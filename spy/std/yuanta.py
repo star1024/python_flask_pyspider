@@ -29,9 +29,9 @@ class Handler(BaseHandler):
         }
 #刪除圖檔
 def delete_img():
-    image1 = 'PrtSrn.png'
-    image2 = 'redraw.png'
-    image3 = 'redraw.jpg'
+    image1 = '/tmp/PrtSrn.png'
+    image2 = '/tmp/redraw.png'
+    image3 = '/tmp/redraw.jpg'
     try:
         os.remove(image1)
         os.remove(image2)
@@ -60,30 +60,30 @@ def Parsing_img(browser):
     # 輸出當前視窗控制代碼（視窗二）
     # print('switch to ', handle)
     browser.switch_to.window(sec_handle)
-    browser.save_screenshot('PrtSrn.png')
+    browser.save_screenshot('/tmp/PrtSrn.png')
     element = browser.find_element_by_xpath('/html/body/img')
     left = element.location['x']
     right = element.location['x'] + element.size['width']
     top = element.location['y']
     bottom = element.location['y'] + element.size['height']
-    img = Image.open('PrtSrn.png')
+    img = Image.open('/tmp/PrtSrn.png')
     img = img.crop((left, top, right, bottom))
-    img.save('redraw.png', 'png')
+    img.save('/tmp/redraw.png', 'png')
     '''
     image png convert to jpg
     '''
-    rgba_image = Image.open('redraw.png')
+    rgba_image = Image.open('/tmp/redraw.png')
     rgba_image.load()
     background = Image.new("RGB", rgba_image.size, (255, 255, 255))
     background.paste(rgba_image, mask = rgba_image.split()[3])
-    background.save("redraw.jpg", "JPEG", quality=100)
+    background.save("/tmp/redraw.jpg", "JPEG", quality=100)
     browser.close() #關閉當前視窗（視窗二）
     # 切換回視窗一
     browser.switch_to.window(first_handle)
     time.sleep(1)
     
     url = 'http://220.132.209.131:5569/predict'
-    files = {'image': open('redraw.jpg', 'rb')}
+    files = {'image': open('/tmp/redraw.jpg', 'rb')}
     r=requests.post(url, files=files)
     data=json.loads(r.content)
     code=data['predictions']
@@ -146,8 +146,8 @@ def selenium(username,userpassword,taskid):
     chrome_options = Options() 
     chrome_options.add_experimental_option("detach", True)
     #chrome_options.add_argument('--headless')  #瀏覽器不提供可視化頁面
-    # chrome_options.add_argument('--disable-gpu') #規避google bug
-    # chrome_options.add_argument('--no-sandbox') #以最高權限運行
+    chrome_options.add_argument('--disable-gpu') #規避google bug
+    chrome_options.add_argument('--no-sandbox') #以最高權限運行
     # chrome_options.add_argument('--disable-plugins') #禁止載入所有外掛，可以增加速度
     # chrome_options.add_argument('blink-settings=imagesEnabled=false') #不加載圖片, 提升速度
 
@@ -196,7 +196,7 @@ def selenium(username,userpassword,taskid):
         error_string = repr(e)
         browser.quit()
         return error_string
-selenium("R221754886","isam1689","uhuihda")
+#selenium("R221754886","isam1689","uhuihda")
 
 #解析pyspider取得遠端api的參數
 def Parsing(url):
