@@ -1,2 +1,5 @@
 # 隐藏文件
 .DS_Store
+#pycache
+spy/__pycache__
+spy/std/__pycache__
