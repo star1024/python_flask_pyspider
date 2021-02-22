@@ -9,6 +9,10 @@ def path():
 
 
 '''decode model''' 
+
+#請求的網址(未含參數)
+def client_url():
+    return 'https://www.careone.com.tw/?params='
 def b64e(s):
     return base64.b64encode(s.encode()).decode()
 
@@ -17,7 +21,7 @@ def b64d(s):
 
 #解析pyspider取得遠端api的參數
 def analysis(url):
-    num = len('https://www.careone.com.tw/?params=')
+    num = len(client_url())
     target_para = url[num:]#取出URL後段加密的字串
     para = b64d(target_para)
     username = eval(para)['username']#去除雙引號

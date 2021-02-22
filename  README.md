@@ -3,6 +3,7 @@
 * python版本3.6  
 * 採用Pyspider與Flask架構
 * 工作流程為客戶執行爬取請求存入資料庫,並透過介面查詢執行狀態
+* selenium使用chrome瀏覽器開啟
 
 1.目錄結構
 -------------
@@ -19,6 +20,7 @@
 
 * 以券商分類
 | Ａ證券   | Ｂ證券  |
+各券商腳本抓取的表格用fun區隔fetch1,fetch2...
 
 * model.py模組化腳本內容
 ```
@@ -33,7 +35,7 @@
 * 使用 absolute imports 引用其他 modules, spy.std.model
 * .pth添加專案路徑讓pyspider框架可import使用專案腳本
 ```
-from spy.std import yuanta
+from spy.std import yuanta(以元大為例)
 
 from importlib import reload
 reload(yuanta)
@@ -48,5 +50,5 @@ class Handler(yuanta.Handler):
 >chromedriver需不定期因應瀏覽器版本更新.exe檔[chromedriver downloads](https://chromedriver.chromium.org/downloads)
 
 >pyspider常見錯誤因素
-* TimeoutError(pyspider.resultdb):沒抓到資料/帳號密碼錯誤
+* TimeoutError(pyspider.resultdb):沒抓到資料/帳號密碼錯誤/驗證碼錯誤
 * NameError(pyspider.taskdb):程式碼出現錯誤

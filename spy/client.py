@@ -12,7 +12,7 @@ def main(user,pwd,user_id,broker):
         'taskid':user_id# 產生第四版 UUID（隨機）
     }
     b64 = model.b64e(str(params))
-    url = 'https://www.careone.com.tw/?params='+b64
+    url = model.client_url()+b64
 
     h1=hashlib.md5()
     h1.update(url.encode(encoding='utf-8'))

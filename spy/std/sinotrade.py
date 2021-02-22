@@ -40,12 +40,27 @@ def insert_db(tmp,taskid):
     db.close()
     time.sleep(1)
 
+#selenium WebDriverWait
 def wait(browser,By,string):
     element = WebDriverWait(browser, 20).until(
         EC.presence_of_element_located((By.XPATH, string))
     )
     return element
 
+#模擬登入
+def login_behavior(browser,username,userpassword):
+    selectid = WebDriverWait(browser,10).until(EC.presence_of_element_located((By.ID, "complex-form_account")))
+    # selectid= browser.find_element_by_id('complex-form_account')#選擇帳號
+    selectid.send_keys(str(username))
+
+    selectPwd = WebDriverWait(browser,10).until(EC.presence_of_element_located((By.ID, "complex-form_password")))
+    # selectPwd= browser.find_element_by_id("complex-form_password")#選擇密碼
+    selectPwd.send_keys(str(userpassword))
+
+    wait(browser,By,'//*[@id="complex-form"]/div[4]/div/div/div/button').click()#模擬登入
+    WebDriverWait(browser,10).until(EC.element_to_be_clickable((By.XPATH,"/html/body/div[4]/div/div[2]/div/div[2]/div/div/div[2]/button[1]/span"))).click()#關掉alert
+
+#庫存表格
 def fetch1(browser,taskid):
     browser.get('https://www.sinotrade.com.tw/inside/TradingAccount')#get新URL
     wait(browser,By,'//a[@href="#tabs-2"]').click()#庫存分頁
@@ -67,13 +82,14 @@ def fetch1(browser,taskid):
 
     insert_db(tmp,taskid)
     model.insert_db2(taskid,"success")
+    
 #啟動selenium
 def selenium(username,userpassword,taskid):
     start = time.time()
     chrome_options = Options() 
     #chrome_options.add_argument('--headless')  #瀏覽器不提供可視化頁面
     chrome_options.add_argument('--disable-gpu') #規避google bug
-    #chrome_options.add_argument('--no-sandbox') #以最高權限運行
+    chrome_options.add_argument('--no-sandbox') #以最高權限運行
     #chrome_options.add_argument('--disable-plugins') #禁止載入所有外掛，可以增加速度
     #chrome_options.add_argument('blink-settings=imagesEnabled=false') #不加載圖片, 提升速度
 
@@ -83,31 +99,17 @@ def selenium(username,userpassword,taskid):
 
     browser.get(url)#get方式進入網站
     try:
-
-        selectid = WebDriverWait(browser,10).until(EC.presence_of_element_located((By.ID, "complex-form_account")))
-        # selectid= browser.find_element_by_id('complex-form_account')#選擇帳號
-        selectid.send_keys(str(username))
-    
-        selectPwd = WebDriverWait(browser,10).until(EC.presence_of_element_located((By.ID, "complex-form_password")))
-        # selectPwd= browser.find_element_by_id("complex-form_password")#選擇密碼
-        selectPwd.send_keys(str(userpassword))
-
-        wait(browser,By,'//*[@id="complex-form"]/div[4]/div/div/div/button').click()#模擬登入
-        WebDriverWait(browser,10).until(EC.element_to_be_clickable((By.XPATH,"/html/body/div[4]/div/div[2]/div/div[2]/div/div/div[2]/button[1]/span"))).click()#關掉alert
-
-        fetch1(browser,taskid)
-        
+        login_behavior(browser,username,userpassword)
+        fetch1(browser,taskid)#庫存表格
         browser.quit()
-
         end = time.time()
         print("執行時間:%f秒"%(end-start))
-        
-        return "success"
+        return "success" #回傳給pyspider result_db
     except Exception as e:
         model.insert_db2(taskid,"fail")
         error_string = repr(e)
         browser.quit()
-        return error_string
+        return error_string #回傳給pyspider result_db
 #selenium("H121666748","isam1689","test")
 
 #解析pyspider取得遠端api的參數

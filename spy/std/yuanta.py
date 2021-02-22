@@ -9,8 +9,7 @@ from selenium.webdriver.common.by import By
 import pymysql
 import requests
 import json
-import urllib.request 
-from PIL import Image,ImageDraw
+from PIL import Image,ImageDraw#截圖
 from spy.std import model # model.py 自定義模組
 from pyspider.libs.base_handler import *
 
@@ -49,7 +48,7 @@ def Parsing_img(browser):
 
     # 獲取當前視窗控制代碼集合（列表型別）
     handles = browser.window_handles
-    print(handles)  # 輸出控制代碼集合
+    # print(handles)  # 輸出控制代碼集合
 
     # 獲取驗證碼視窗
     sec_handle = None
@@ -89,7 +88,7 @@ def Parsing_img(browser):
     code=data['predictions']
     delete_img()#刪除圖檔
     time.sleep(1)
-    print(code)
+    # print(code)
     return code
 
 #存入資料庫1
@@ -107,13 +106,41 @@ def insert_db(tmp,taskid):
     db.close()
     time.sleep(1)
 
+#selenium WebDriverWait
 def wait(browser,By,string):
     element = WebDriverWait(browser, 20).until(
         EC.presence_of_element_located((By.XPATH, string))
     )
     return element
 
+#模擬登入
+def login_behavior(browser,username,userpassword):
+    VerificationCode = Parsing_img(browser)
+
+    selectid = WebDriverWait(browser,10).until(EC.presence_of_element_located((By.ID, "loginid")))#選擇帳號
+    # selectid= browser.find_element_by_id('loginid')#選擇帳號
+    # selectid.clear()
+    selectid.send_keys(str(username))
+
+    selectPwd = WebDriverWait(browser,10).until(EC.presence_of_element_located((By.ID, "loginPWD")))#選擇帳號
+    # selectPwd= browser.find_element_by_id("loginPWD")#選擇密碼
+    # selectPwd.clear()
+    selectPwd.send_keys(str(userpassword))
+    
+    selectCode = WebDriverWait(browser,10).until(EC.presence_of_element_located((By.ID, "code")))#選擇驗證碼
+    # selectCode= browser.find_element_by_id("code")#選擇驗證碼
+    selectCode.send_keys(VerificationCode)
+    
+    WebDriverWait(browser,10).until(EC.element_to_be_clickable((By.ID,"button1"))).click()#模擬登入
+    # searchBtn=browser.find_element_by_id('button1')
+    # searchBtn.click()#模擬登入
+
+#已實現表格
 def fetch1(browser,taskid):
+    wait(browser,By,'//a[@data-link="nexuswebtrade/RealPF"]').click()#模擬登入
+    # elements = browser.find_element_by_xpath('//a[@data-link="nexuswebtrade/RealPF"]')
+    # elements.click()#模擬選項
+    # time.sleep(3)
     table_col = browser.find_element_by_xpath('//*[@id="tbdyrealPF"]/tr/td/table/tbody/tr/td[1]/table/tbody/tr[2]/td/div/table/thead')#欄位名稱
     table_val = browser.find_element_by_xpath('//*[@id="tbdyrealPF"]/tr/td/table/tbody/tr/td[1]/table/tbody/tr[2]/td/div/table/tbody')#欄位內容
     tmps_col = table_col.text.split()
@@ -144,7 +171,7 @@ def selenium(username,userpassword,taskid):
     start = time.time()
 
     chrome_options = Options() 
-    chrome_options.add_experimental_option("detach", True)
+    #chrome_options.add_experimental_option("detach", True)#不自动关闭浏览器
     #chrome_options.add_argument('--headless')  #瀏覽器不提供可視化頁面
     chrome_options.add_argument('--disable-gpu') #規避google bug
     chrome_options.add_argument('--no-sandbox') #以最高權限運行
@@ -160,42 +187,17 @@ def selenium(username,userpassword,taskid):
     time.sleep(2)#網站有loading時間
 
     try:
-        VerificationCode = Parsing_img(browser)
-
-        selectid = WebDriverWait(browser,10).until(EC.presence_of_element_located((By.ID, "loginid")))#選擇帳號
-        # selectid= browser.find_element_by_id('loginid')#選擇帳號
-        # selectid.clear()
-        selectid.send_keys(str(username))
-    
-        selectPwd = WebDriverWait(browser,10).until(EC.presence_of_element_located((By.ID, "loginPWD")))#選擇帳號
-        # selectPwd= browser.find_element_by_id("loginPWD")#選擇密碼
-        # selectPwd.clear()
-        selectPwd.send_keys(str(userpassword))
-        
-        selectCode = WebDriverWait(browser,10).until(EC.presence_of_element_located((By.ID, "code")))#選擇驗證碼
-        # selectCode= browser.find_element_by_id("code")#選擇驗證碼
-        selectCode.send_keys(VerificationCode)
-        
-        WebDriverWait(browser,10).until(EC.element_to_be_clickable((By.ID,"button1"))).click()#模擬登入
-        # searchBtn=browser.find_element_by_id('button1')
-        # searchBtn.click()#模擬登入
-        
-        wait(browser,By,'//a[@data-link="nexuswebtrade/RealPF"]').click()#模擬登入
-        # elements = browser.find_element_by_xpath('//a[@data-link="nexuswebtrade/RealPF"]')
-        # elements.click()#模擬選項
-        # time.sleep(3)
+        login_behavior(browser,username,userpassword)
         fetch1(browser,taskid)
-        
         browser.quit()
-        # # print('頁面加載成功')
         end = time.time()
         print("執行時間：%f 秒" % (end - start))
-        return "success"
+        return "success" #回傳給pyspider result_db
     except Exception as e:
         model.insert_db2(taskid,"fail")
         error_string = repr(e)
         browser.quit()
-        return error_string
+        return error_string #回傳給pyspider result_db
 #selenium("R221754886","isam1689","uhuihda")
 
 #解析pyspider取得遠端api的參數
@@ -206,8 +208,3 @@ def Parsing(url):
     taskid = para[2]
     data_provider = selenium(username,userpassword,taskid)
     return [taskid,data_provider]
-
-
-
-
-

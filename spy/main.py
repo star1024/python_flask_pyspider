@@ -7,13 +7,15 @@ import uuid
 app = Flask(__name__)#定位目前載入資料夾的位置
 app.config["DEBUG"] = True
 
-#選擇券商
+#選擇券商,pyspider專案名稱
 def broker_val(data):
     return {
     '元大': 'yuanta',
     '永豐': 'sinotrade_v3',
     }.get(data,'yuanta')  #'yuanta'為預設返回值，可自設定
-def msyql(data):
+
+#查詢db執行結果
+def mysql(data):
     data = "'"+data+"'"
     db = pymysql.connect(host='localhost',port=3306,user='root',password='',db='mytodo',charset='utf8')
     sql = sql = 'Select * FROM table2 Where projid='+data+';'
@@ -45,7 +47,7 @@ def result():
 
     if 'project_id' in request.args:#查詢DB執行結果
         search_id = request.args.get('project_id')
-        result_id = msyql(search_id)
+        result_id = mysql(search_id)
         return render_template('result.html', result=result_id)
     
     return render_template('result.html',broker=request.args['broker'], name = request.args['name'], projectid = request.args['projectid'])
